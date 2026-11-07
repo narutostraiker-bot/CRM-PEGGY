@@ -3,1125 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CRM & Menú Digital - Fase 1</title>
+  <title>CRM & Menú Digital</title>
+
+  <!-- Librerías visuales base (Tailwind + Iconos) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
-    .glass { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-    .commercial-gradient { background: linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #dc2626 100%); }
-    .hide-scroll::-webkit-scrollbar { display: none; }
-    .pulse-border { animation: pulseBorder 2s infinite; }
-    @keyframes pulseBorder {
-      0%, 100% { border-color: rgba(245, 158, 11, 0.9); box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
-      50% { border-color: rgba(245, 158, 11, 0.2); box-shadow: 0 0 0px rgba(245, 158, 11, 0); }
-    }
-  </style>
+
+  <!-- CONEXIÓN AL ARCHIVO 2: ESTILOS VISUALES -->
+  <link rel="stylesheet" href="estilos.css" />
 </head>
-<body class="min-h-screen pb-28">
+<body class="bg-slate-950 text-slate-100 min-h-screen pb-24">
 
-  <!-- BARRA SUPERIOR DE SIMULACIÓN (CAMBIO ENTRE CLIENTE Y PERSONAL DE MESAS/COCINA) -->
-  <div class="sticky top-0 z-50 bg-slate-950/95 border-b border-amber-500/30 px-3 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-    <div class="flex items-center gap-2">
-      <span class="bg-amber-500 text-slate-950 font-extrabold px-2 py-0.5 rounded">FASE 1</span>
-      <span id="voice-indicator" class="text-emerald-400 flex items-center gap-1">
-        <i class="fa-solid fa-volume-high"></i> Voz Activa
-      </span>
-    </div>
-    <div class="flex gap-1.5">
-      <button onclick="switchRoleView('client')" id="btn-role-client" class="px-3 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition">
-        <i class="fa-solid fa-mobile-screen"></i> Vista Comensal
-      </button>
-      <button onclick="switchRoleView('staff')" id="btn-role-staff" class="px-3 py-1 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
-        <i class="fa-solid fa-utensils"></i> Panel Mesas / Cocina <span id="staff-badge" class="ml-1 bg-red-500 text-white px-1.5 rounded-full hidden">1</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ==========================================
-       VISTA 1: FILTRO DE BIENVENIDA
-  =========================================== -->
-  <section id="screen-welcome" class="max-w-md mx-auto px-4 pt-10">
-    <div class="glass rounded-3xl p-7 text-center shadow-2xl">
-      <div class="w-20 h-20 mx-auto mb-4 rounded-2xl commercial-gradient flex items-center justify-center shadow-lg">
-        <i class="fa-solid fa-burger text-4xl text-white"></i>
+  <!-- =========================================================
+       BARRA SUPERIOR DE NAVEGACIÓN (PARA CAMBIAR ENTRE MÓDULOS)
+  ========================================================== -->
+  <header class="sticky top-0 z-40 bg-slate-900/95 border-b border-amber-500/30 px-3 py-2">
+    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="bg-amber-500 text-slate-950 font-extrabold px-2 py-0.5 rounded">CRM</span>
+        <span id="indicador-voz" class="text-emerald-400 font-bold">
+          <i class="fa-solid fa-volume-high"></i> Audio Activo
+        </span>
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight mb-2">¡Bienvenido a Nuestra Mesa Digital!</h1>
-      <p class="text-slate-400 text-sm mb-8">Para darte atención personalizada y calcular tu tiempo exacto de preparación, cuéntanos:</p>
 
-      <p class="text-amber-400 font-bold text-sm uppercase tracking-wider mb-4">¿Ya has comido aquí antes?</p>
-
-      <div class="space-y-3">
-        <button onclick="showAuthScreen('register')" class="w-full py-4 px-5 rounded-2xl commercial-gradient font-extrabold text-white shadow-lg flex items-center justify-between hover:opacity-95 transition">
-          <span class="flex items-center gap-3">
-            <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
-            <span class="text-left">
-              <span class="block text-base">Es mi primera vez</span>
-              <span class="block text-xs text-amber-100 font-normal">Crear mi perfil para recibir servicio y puntos</span>
-            </span>
-          </span>
-          <i class="fa-solid fa-chevron-right"></i>
+      <!-- Botones para cambiar entre la vista del Cliente y las áreas del Personal -->
+      <nav class="flex flex-wrap gap-1">
+        <button onclick="cambiarModuloPrincipal('vista-acceso')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 font-bold">
+          🔐 Acceso
         </button>
-
-        <button onclick="showAuthScreen('login')" class="w-full py-4 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 font-bold text-slate-100 flex items-center justify-between transition">
-          <span class="flex items-center gap-3">
-            <i class="fa-solid fa-user-check text-xl text-emerald-400"></i>
-            <span class="text-left">
-              <span class="block text-base">Sí, ya había venido</span>
-              <span class="block text-xs text-slate-400 font-normal">Iniciar sesión con mi teléfono</span>
-            </span>
-          </span>
-          <i class="fa-solid fa-chevron-right text-slate-400"></i>
+        <button onclick="cambiarModuloPrincipal('vista-cliente')" class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-extrabold">
+          📱 Cliente (3 Zonas)
         </button>
-      </div>
+        <button onclick="cambiarModuloPrincipal('vista-mesas')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 font-bold">
+          👨‍🍳 Mesas y Cocina
+        </button>
+        <button onclick="cambiarModuloPrincipal('vista-modos')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 font-bold">
+          🧠 3 Modos
+        </button>
+        <button onclick="cambiarModuloPrincipal('vista-plataformas')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 font-bold">
+          🛵 DiDi / Uber / Rappi
+        </button>
+        <button onclick="cambiarModuloPrincipal('vista-arqueo')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 font-bold">
+          💰 Arqueo Caja
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       1. CONTENEDOR DE ACCESO, REGISTRO Y LOGIN
+       (Lo controla: acceso_registro.js)
+  ========================================================== -->
+  <section id="vista-acceso" class="modulo-pantalla max-w-md mx-auto p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center text-sm text-slate-400">
+      Aquí cargará el módulo <strong>acceso_registro.js</strong> (Pregunta inicial, validación de 10 dígitos, sexo y ubicación).
     </div>
   </section>
 
-  <!-- ==========================================
-       VISTA 2A: REGISTRO CON VALIDACIÓN 10 DÍGITOS Y SEXO
-  =========================================== -->
-  <section id="screen-register" class="max-w-md mx-auto px-4 pt-6 hidden">
-    <div class="glass rounded-3xl p-6 shadow-2xl">
-      <button onclick="backToWelcome()" class="text-slate-400 hover:text-white text-sm mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-arrow-left"></i> Volver al inicio
+  <!-- =========================================================
+       2. CONTENEDOR DEL COMENSAL (DIVIDIDO EN LAS 3 ZONAS)
+       (Lo controlan: perfil_cliente.js, tienda_menu.js, zona_descuentos.js, carrito_pagos.js)
+  ========================================================== -->
+  <main id="vista-cliente" class="modulo-pantalla max-w-md mx-auto p-4 hidden space-y-4">
+
+    <!-- Cabecera de fila de espera y Semáforo con voz -->
+    <div id="contenedor-semaforo"></div>
+
+    <!-- Botonera de las 3 Zonas del Cliente -->
+    <div class="grid grid-cols-3 gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 text-xs font-extrabold">
+      <button onclick="cambiarZonaCliente('zona-perfil')" id="btn-zona-perfil" class="py-2.5 rounded-xl text-slate-400">
+        👤 Mi Perfil
       </button>
-      <h2 class="text-xl font-extrabold mb-1">Registro para el Servicio</h2>
-      <p class="text-xs text-slate-400 mb-5">Tus datos nos permiten avisarte por voz y guardar tus direcciones favoritas.</p>
-
-      <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4">
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="text-xs font-bold text-slate-300 block mb-1">Nombre *</label>
-            <input type="text" id="reg-name" required placeholder="Ej. Sofía" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:border-amber-500 focus:outline-none" />
-          </div>
-          <div>
-            <label class="text-xs font-bold text-slate-300 block mb-1">Apellido *</label>
-            <input type="text" id="reg-lastname" required placeholder="Ej. Ramírez" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:border-amber-500 focus:outline-none" />
-          </div>
-        </div>
-
-        <!-- SEXO / TRATO PARA POP-UPS Y VOZ -->
-        <div>
-          <label class="text-xs font-bold text-slate-300 block mb-1">¿Cómo prefieres que nuestro sistema se dirija a ti? *</label>
-          <div class="grid grid-cols-3 gap-2">
-            <label class="cursor-pointer">
-              <input type="radio" name="reg-gender" value="F" class="peer hidden" checked />
-              <div class="text-center py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 peer-checked:border-amber-500 peer-checked:bg-amber-500/20 text-xs font-bold">
-                👩 Señorita
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="reg-gender" value="M" class="peer hidden" />
-              <div class="text-center py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 peer-checked:border-amber-500 peer-checked:bg-amber-500/20 text-xs font-bold">
-                👨 Joven / Cab.
-              </div>
-            </label>
-            <label class="cursor-pointer">
-              <input type="radio" name="reg-gender" value="N" class="peer hidden" />
-              <div class="text-center py-2.5 px-2 rounded-xl border border-slate-700 bg-slate-900 peer-checked:border-amber-500 peer-checked:bg-amber-500/20 text-xs font-bold">
-                ✨ Por Nombre
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- TELÉFONO CON VALIDACIÓN ESTRICTA A 10 DÍGITOS -->
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label class="text-xs font-bold text-slate-300">Teléfono celular (10 dígitos) *</label>
-            <span id="phone-counter" class="text-xs font-bold text-red-400">0 / 10 dígitos</span>
-          </div>
-          <input
-            type="tel"
-            id="reg-phone"
-            inputmode="numeric"
-            maxlength="10"
-            required
-            placeholder="Ej. 7221234567"
-            oninput="validatePhoneInput(this)"
-            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm tracking-widest font-mono focus:border-amber-500 focus:outline-none"
-          />
-          <p id="phone-error" class="text-[11px] text-amber-400 mt-1">Solo números. Debe tener exactamente 10 dígitos para continuar.</p>
-        </div>
-
-        <!-- CORREO -->
-        <div>
-          <label class="text-xs font-bold text-slate-300 block mb-1">Correo electrónico *</label>
-          <input type="email" id="reg-email" required placeholder="cliente@correo.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:border-amber-500 focus:outline-none" />
-        </div>
-
-        <!-- ETIQUETA DE UBICACIÓN -->
-        <div>
-          <label class="text-xs font-bold text-slate-300 block mb-1.5">¿Desde qué ubicación nos visitas o pides hoy? *</label>
-          <div class="grid grid-cols-3 gap-2 mb-2">
-            <button type="button" onclick="selectAddressTag('🏠 Casa')" class="addr-tag-btn py-2 px-2 rounded-xl border border-amber-500 bg-amber-500/20 text-xs font-bold">🏠 Casa</button>
-            <button type="button" onclick="selectAddressTag('💼 Trabajo')" class="addr-tag-btn py-2 px-2 rounded-xl border border-slate-700 bg-slate-900 text-xs font-bold">💼 Trabajo</button>
-            <button type="button" onclick="selectAddressTag('❤️ Con mi novi@')" class="addr-tag-btn py-2 px-2 rounded-xl border border-slate-700 bg-slate-900 text-xs font-bold">❤️ Con mi novi@</button>
-          </div>
-          <input type="hidden" id="reg-addr-tag" value="🏠 Casa" />
-          <input type="text" id="reg-address" required placeholder="Calle, número, colonia o referencia..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:border-amber-500 focus:outline-none" />
-        </div>
-
-        <button type="submit" id="btn-submit-register" disabled class="w-full py-3.5 rounded-2xl bg-slate-700 text-slate-400 font-extrabold text-sm cursor-not-allowed transition">
-          Completa los 10 dígitos del teléfono
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- ==========================================
-       VISTA 2B: INICIAR SESIÓN (YA HABÍA VENIDO)
-  =========================================== -->
-  <section id="screen-login" class="max-w-md mx-auto px-4 pt-8 hidden">
-    <div class="glass rounded-3xl p-6 shadow-2xl">
-      <button onclick="backToWelcome()" class="text-slate-400 hover:text-white text-sm mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-arrow-left"></i> Volver
+      <button onclick="cambiarZonaCliente('zona-tienda')" id="btn-zona-tienda" class="py-2.5 rounded-xl bg-amber-500 text-slate-950">
+        🍔 Tienda
       </button>
-      <h2 class="text-xl font-extrabold mb-1">¡Qué gusto verte de nuevo!</h2>
-      <p class="text-xs text-slate-400 mb-5">Ingresa tu número a 10 dígitos o entra con la cuenta demo.</p>
-
-      <form onsubmit="handleQuickLogin(event)" class="space-y-4">
-        <div>
-          <label class="text-xs font-bold text-slate-300 block mb-1">Teléfono registrado (10 dígitos)</label>
-          <input type="tel" id="login-phone" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')" placeholder="7221234567" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm font-mono" />
-        </div>
-        <button type="submit" class="w-full py-3.5 rounded-2xl commercial-gradient text-white font-extrabold text-sm shadow-lg">
-          Entrar a mi cuenta
-        </button>
-      </form>
-    </div>
-  </section>
-
-  <!-- ==========================================
-       VISTA 3: APP DEL COMENSAL (DIVIDIDA EN 3 ZONAS)
-  =========================================== -->
-  <main id="screen-app" class="max-w-md mx-auto px-4 pt-4 hidden">
-
-    <!-- CABECERA DEL CLIENTE + MONITOR DE MESA DIGITAL (MÁX 5 LUGARES) -->
-    <div class="glass rounded-2xl p-4 mb-4">
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <img id="header-avatar" src="https://ui-avatars.com/api/?name=Clienta&background=f59e0b&color=0f172a&bold=true" class="w-11 h-11 rounded-full object-cover border-2 border-amber-400" alt="Perfil" />
-          <div>
-            <p id="header-greeting" class="font-extrabold text-sm text-amber-400">Hola, Señorita Sofía</p>
-            <p id="header-location" class="text-xs text-slate-400"><i class="fa-solid fa-location-dot text-emerald-400"></i> 🏠 Casa</p>
-          </div>
-        </div>
-        <div class="text-right">
-          <span class="text-[11px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-1 rounded-full font-bold">
-            ⭐ <span id="header-points">120</span> pts
-          </span>
-        </div>
-      </div>
-
-      <!-- MONITOR DE FILA Y TIEMPO ESTIMADO (MESA DIGITAL + FÍSICA) -->
-      <div id="queue-banner" class="bg-slate-900/90 border border-slate-700 rounded-xl p-3 flex items-center justify-between text-xs">
-        <div>
-          <span class="font-bold text-slate-200 flex items-center gap-1.5">
-            <span id="queue-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span>
-            Mesa Digital: <span id="queue-slots-text" class="text-amber-400">3 / 5 lugares ocupados</span>
-          </span>
-          <p id="queue-detail-text" class="text-[11px] text-slate-400 mt-0.5">
-            Intercalado 1x1 activo con Mesa Física
-          </p>
-        </div>
-        <div class="text-right pl-2 border-l border-slate-800">
-          <span class="block text-[10px] text-slate-400 uppercase">Espera Est.</span>
-          <span id="queue-wait-minutes" class="text-base font-extrabold text-emerald-400">25 min</span>
-        </div>
-      </div>
-
-      <!-- SEMÁFORO DE ESTADO DEL PEDIDO EN VIVO -->
-      <div id="order-semaforo" class="mt-3 hidden rounded-xl p-3 border text-xs transition-all">
-        <div class="flex items-center justify-between font-extrabold mb-1">
-          <span id="semaforo-title">🟡 VALIDANDO EN MESAS...</span>
-          <span id="semaforo-folio" class="font-mono text-[11px]">#ORD-104</span>
-        </div>
-        <p id="semaforo-desc" class="text-[11px] opacity-90">El área de Mesas está verificando que tus platillos estén disponibles antes de activar el pago.</p>
-
-        <!-- BOTONES DE PAGO (SOLO SE ACTIVAN CUANDO MESAS CONFIRMA) -->
-        <div id="payment-unlock-box" class="mt-3 pt-3 border-t border-white/15 hidden">
-          <p class="font-bold text-emerald-300 mb-2">✅ ¡Mesas confirmó tu orden! Selecciona tu pago:</p>
-          <div class="grid grid-cols-2 gap-2">
-            <button onclick="completePayment('Tarjeta (Online)')" class="py-2.5 px-3 rounded-xl bg-emerald-500 text-slate-950 font-extrabold flex items-center justify-center gap-1.5">
-              <i class="fa-regular fa-credit-card"></i> Pagar Tarjeta
-            </button>
-            <button onclick="completePayment('Efectivo')" class="py-2.5 px-3 rounded-xl bg-slate-800 border border-slate-600 text-white font-bold flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-money-bill-wave text-emerald-400"></i> Efectivo
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NAVEGACIÓN PRINCIPAL DE LAS 3 ZONAS -->
-    <div class="grid grid-cols-3 gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800 mb-4">
-      <button onclick="switchClientTab('tienda')" id="tab-btn-tienda" class="py-2.5 rounded-xl font-extrabold text-xs bg-amber-500 text-slate-950 transition">
-        <i class="fa-solid fa-store mr-1"></i> Tienda
-      </button>
-      <button onclick="switchClientTab('perfil')" id="tab-btn-perfil" class="py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-user mr-1"></i> Mi Perfil
-      </button>
-      <button onclick="switchClientTab('descuentos')" id="tab-btn-descuentos" class="py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition">
-        <i class="fa-solid fa-tags mr-1"></i> Códigos
+      <button onclick="cambiarZonaCliente('zona-descuentos')" id="btn-zona-descuentos" class="py-2.5 rounded-xl text-slate-400">
+        🏷️ Códigos
       </button>
     </div>
 
-    <!-- ==========================================
-         ZONA 1: TIENDA (MENÚ DIGITAL + BUSCADOR + CATEGORÍAS)
-    =========================================== -->
-    <div id="zone-tienda" class="space-y-4">
-      <!-- Barra de búsqueda -->
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-        <input
-          type="text"
-          id="menu-search"
-          oninput="renderMenu()"
-          placeholder="Buscar ej. desayuno, huevos, hamburguesa..."
-          class="w-full bg-slate-900 border border-slate-700 rounded-2xl pl-10 pr-4 py-2.5 text-sm focus:border-amber-500 focus:outline-none"
-        />
-      </div>
+    <!-- ZONA 1: MI PERFIL -->
+    <div id="zona-perfil" class="subzona-cliente hidden"></div>
 
-      <!-- Clasificación de productos -->
-      <div class="flex gap-2 overflow-x-auto hide-scroll pb-1">
-        <button onclick="setCategory('Todo')" class="cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-500 text-slate-950">Todo</button>
-        <button onclick="setCategory('Desayuno Huevos')" class="cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300">🍳 Desayuno Huevos</button>
-        <button onclick="setCategory('Hamburguesas')" class="cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300">🍔 Hamburguesas</button>
-        <button onclick="setCategory('Especialidades')" class="cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300">🥩 Especialidades</button>
-        <button onclick="setCategory('Bebidas')" class="cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300">🥤 Bebidas</button>
-      </div>
+    <!-- ZONA 2: TIENDA (MENÚ DIGITAL) -->
+    <div id="zona-tienda" class="subzona-cliente"></div>
 
-      <!-- Lista de productos -->
-      <div id="menu-grid" class="space-y-3"></div>
+    <!-- ZONA 3: ZONA DE DESCUENTOS Y PROMOCIONES -->
+    <div id="zona-descuentos" class="subzona-cliente hidden"></div>
 
-      <!-- Carrito Resumen -->
-      <div id="cart-box" class="glass rounded-2xl p-4 border border-amber-500/40 hidden">
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="font-extrabold text-sm"><i class="fa-solid fa-cart-shopping text-amber-400 mr-1"></i> Tu Bandeja</h3>
-          <span id="cart-prep-time" class="text-xs text-amber-300 font-bold">⏱️ +10 min prep.</span>
-        </div>
-        <div id="cart-items" class="space-y-1.5 text-xs mb-3"></div>
-        <div class="flex justify-between items-center text-xs text-slate-400 border-t border-slate-700 pt-2 mb-3">
-          <span>Descuento aplicado: <strong id="cart-discount-label" class="text-emerald-400">$0</strong></span>
-          <span class="text-base font-extrabold text-white">Total: $<span id="cart-total">0</span></span>
-        </div>
-        <button onclick="sendOrderToMesas()" id="btn-send-mesas" class="w-full py-3.5 rounded-xl commercial-gradient text-white font-extrabold text-sm shadow-lg">
-          Enviar a Mesas para Confirmar Disponibilidad
-        </button>
-      </div>
-    </div>
-
-    <!-- ==========================================
-         ZONA 2: MI PERFIL (FOTO, DIRECCIONES, PUNTOS, ÚLTIMAS COMPRAS)
-    =========================================== -->
-    <div id="zone-perfil" class="space-y-4 hidden">
-      <!-- Cambiar Foto y Datos -->
-      <div class="glass rounded-2xl p-4 flex items-center gap-4">
-        <div class="relative">
-          <img id="profile-avatar" src="https://ui-avatars.com/api/?name=Clienta&background=f59e0b&color=0f172a&bold=true" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-400" alt="Avatar" />
-          <label class="absolute -bottom-1 -right-1 bg-amber-500 text-slate-950 w-7 h-7 rounded-full flex items-center justify-center cursor-pointer shadow">
-            <i class="fa-solid fa-camera text-xs"></i>
-            <input type="file" accept="image/*" class="hidden" onchange="changeProfilePhoto(event)" />
-          </label>
-        </div>
-        <div class="text-xs">
-          <p id="profile-fullname" class="font-extrabold text-base text-white">Sofía Ramírez</p>
-          <p id="profile-contact" class="text-slate-400">📱 7221234567 · cliente@correo.com</p>
-          <span id="profile-courtesy" class="inline-block mt-1 px-2 py-0.5 rounded bg-slate-800 text-amber-400 font-bold">Trato: Señorita</span>
-        </div>
-      </div>
-
-      <!-- Zona de Puntos y Canje -->
-      <div class="glass rounded-2xl p-4">
-        <div class="flex justify-between items-center mb-2">
-          <h4 class="font-extrabold text-sm">⭐ Zona de Puntos y Recompensas</h4>
-          <span class="text-amber-400 font-extrabold text-sm"><span id="profile-points">120</span> pts</span>
-        </div>
-        <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden mb-3">
-          <div class="commercial-gradient h-full" style="width: 60%"></div>
-        </div>
-        <div class="flex gap-2">
-          <input type="text" id="profile-code-input" placeholder="Ingresa código para canjear..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs uppercase" />
-          <button onclick="redeemProfileCode()" class="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs">Canjear</button>
-        </div>
-      </div>
-
-      <!-- Mis Direcciones Guardadas -->
-      <div class="glass rounded-2xl p-4">
-        <h4 class="font-extrabold text-sm mb-2">📍 Mis Ubicaciones Guardadas</h4>
-        <div id="saved-addresses-list" class="space-y-2 text-xs mb-3"></div>
-        <div class="grid grid-cols-3 gap-1.5">
-          <input type="text" id="new-addr-tag" placeholder="Ej. ❤️ Con mi novi@" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs" />
-          <input type="text" id="new-addr-text" placeholder="Calle y número..." class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-2 text-xs" />
-          <button onclick="addNewAddress()" class="rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs">+ Guardar</button>
-        </div>
-      </div>
-
-      <!-- Últimas Compras -->
-      <div class="glass rounded-2xl p-4">
-        <h4 class="font-extrabold text-sm mb-2">🧾 Últimas Compras</h4>
-        <div id="past-orders-list" class="space-y-2 text-xs">
-          <div class="bg-slate-900 p-3 rounded-xl flex justify-between items-center">
-            <div>
-              <p class="font-bold text-slate-200">Paquete Comida del Día + Agua</p>
-              <p class="text-slate-400 text-[11px]">Hace 3 días · $85 MXN · Pagado con Tarjeta</p>
-            </div>
-            <button onclick="QuickReorder('Paquete Comida del Día', 85, 10)" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold">Repetir</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==========================================
-         ZONA 3: ZONA DE DESCUENTOS Y CÓDIGOS PROMOCIONALES
-    =========================================== -->
-    <div id="zone-descuentos" class="space-y-3 hidden">
-      <div class="commercial-gradient rounded-2xl p-4 text-white shadow-lg">
-        <span class="text-[10px] uppercase tracking-wider bg-black/30 px-2 py-0.5 rounded font-bold">Modo Híbrido Activo</span>
-        <h3 class="text-lg font-extrabold mt-1">10% OFF en Tienda</h3>
-        <p class="text-xs text-amber-100 mb-3">Promoción especial por fecha aplicable directamente en tu bandeja.</p>
-        <div class="flex items-center justify-between bg-black/25 rounded-xl p-2.5">
-          <span class="font-mono font-extrabold text-sm tracking-widest">10SEP10%</span>
-          <button onclick="applyPromoCode('10SEP10%', 10)" class="bg-white text-slate-950 px-3 py-1 rounded-lg text-xs font-extrabold">
-            Aplicar a mi compra
-          </button>
-        </div>
-      </div>
-
-      <div class="glass rounded-2xl p-4 border border-emerald-500/30">
-        <h3 class="font-extrabold text-sm text-emerald-400">Combo Sinergia Desayuno (-$15 MXN)</h3>
-        <p class="text-xs text-slate-400 mb-3">Válido al pedir cualquier platillo de Huevos o Especialidades con bebida.</p>
-        <div class="flex items-center justify-between bg-slate-900 rounded-xl p-2.5">
-          <span class="font-mono font-extrabold text-sm text-emerald-300">SINERGIA15</span>
-          <button onclick="applyPromoCode('SINERGIA15', 15)" class="bg-emerald-500 text-slate-950 px-3 py-1 rounded-lg text-xs font-extrabold">
-            Aplicar cupón
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- BANDEJA DEL CARRITO Y PAGOS (Bloqueado hasta que Mesas confirme) -->
+    <div id="contenedor-carrito"></div>
   </main>
 
-  <!-- ==========================================
-       VISTA 4: PANEL DE MESAS / COCINA + MÉTRICAS DE POP-UPS COMERCIALES
-  =========================================== -->
-  <section id="screen-staff" class="max-w-2xl mx-auto px-4 pt-4 hidden space-y-4">
-    <div class="glass rounded-2xl p-4 border border-amber-500/40">
-      <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
-        <div>
-          <h2 class="text-lg font-extrabold text-amber-400"><i class="fa-solid fa-fire-burner mr-1"></i> Control de Mesas (Digital máx. 5 + Física)</h2>
-          <p class="text-xs text-slate-400">Todo lo que muevas aquí actualiza el reloj y habla en el celular del cliente.</p>
-        </div>
-        <select id="ratio-selector" onchange="updateQueueCalculation()" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-amber-300">
-          <option value="1:1">Intercalado 1 Digital : 1 Física (Balanceado)</option>
-          <option value="1:2">Prioridad Local (1 Digital : 2 Físicas)</option>
-          <option value="2:1">Prioridad Digital (2 Digitales : 1 Física)</option>
-        </select>
-      </div>
+  <!-- =========================================================
+       3. CONTENEDOR DE MESAS (DIGITAL MÁX 5 + FÍSICA 1x1) Y COCINA
+       (Lo controla: mesas_tiempos.js)
+  ========================================================== -->
+  <section id="vista-mesas" class="modulo-pantalla max-w-3xl mx-auto p-4 hidden"></section>
 
-      <!-- Contadores de Mesas y Botones de Cocina -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center mb-3">
-        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <span class="text-[11px] text-slate-400 block">Mesas Digitales</span>
-          <span id="staff-digital-count" class="text-xl font-extrabold text-amber-400">3 / 5</span>
-        </div>
-        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <span class="text-[11px] text-slate-400 block">Mesas Físicas</span>
-          <span id="staff-physical-count" class="text-xl font-extrabold text-sky-400">1</span>
-        </div>
-        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <span class="text-[11px] text-slate-400 block">En Fila (+5)</span>
-          <span id="staff-overflow-count" class="text-xl font-extrabold text-rose-400">0</span>
-        </div>
-        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-          <span class="text-[11px] text-slate-400 block">Reloj Global</span>
-          <span id="staff-total-wait" class="text-xl font-extrabold text-emerald-400">25 min</span>
-        </div>
-      </div>
+  <!-- =========================================================
+       4. CONTENEDOR DE LOS 3 MODOS (MANUAL, AUTOMÁTICO, HÍBRIDO)
+       (Lo controla: modos_inteligencia.js)
+  ========================================================== -->
+  <section id="vista-modos" class="modulo-pantalla max-w-3xl mx-auto p-4 hidden"></section>
 
-      <!-- Botones Operativos de Cocina y Mesa Física -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-bold">
-        <button onclick="addPhysicalTable()" class="py-2.5 px-2 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 hover:bg-sky-500/30">
-          + Mesa Física (Sin datos, +10m)
-        </button>
-        <button onclick="addExtraKitchenTime(10)" class="py-2.5 px-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 hover:bg-amber-500/30">
-          ⏱️ + Más Tiempo (+10m)
-        </button>
-        <button onclick="injectDigitalOrder()" class="py-2.5 px-2 rounded-xl bg-purple-500/20 border border-purple-500/40 text-purple-300 hover:bg-purple-500/30">
-          🍔 + Otro Pedido Digital (+10m)
-        </button>
-        <button onclick="releaseOneSlot()" class="py-2.5 px-2 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30">
-          ✅ Despachar 1 Mesa (-10m)
-        </button>
-      </div>
-    </div>
+  <!-- =========================================================
+       5. CONTENEDOR DE PLATAFORMAS EXTERNAS (DIDI, UBER, RAPPI)
+       (Lo controla: plataformas_externas.js)
+  ========================================================== -->
+  <section id="vista-plataformas" class="modulo-pantalla max-w-3xl mx-auto p-4 hidden"></section>
 
-    <!-- VALIDACIÓN DE PEDIDO DEL CLIENTE (EL FILTRO DE MESAS) -->
-    <div class="glass rounded-2xl p-4 border border-slate-700">
-      <h3 class="font-extrabold text-sm mb-2">📋 Bandeja de Validación en Mesas (Cliente Actual)</h3>
-      <div id="staff-order-card" class="bg-slate-900 rounded-xl p-4 text-xs text-slate-400">
-        Aún no hay un pedido pendiente de validación. Haz un pedido desde la Vista Comensal o usa los botones de prueba abajo:
-      </div>
+  <!-- =========================================================
+       6. CONTENEDOR DE ARQUEO DE CAJA AL FINAL DEL TURNO
+       (Lo controla: arqueo_caja.js)
+  ========================================================== -->
+  <section id="vista-arqueo" class="modulo-pantalla max-w-3xl mx-auto p-4 hidden"></section>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-xs font-extrabold">
-        <button onclick="staffConfirmOrder()" class="py-3 px-3 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-check-double"></i> 1. Sí hay disponible (Desbloquear Pago)
-        </button>
-        <button onclick="staffTriggerOutOfStockCommercial()" class="py-3 px-3 rounded-xl commercial-gradient text-white flex items-center justify-center gap-2">
-          <i class="fa-solid fa-bullhorn"></i> 2. No hay disponible (Lanzar Pop-up Comercial)
-        </button>
-        <button onclick="staffSetOrderReady()" class="py-2.5 px-3 rounded-xl bg-sky-500 text-slate-950 flex items-center justify-center gap-2">
-          <i class="fa-solid fa-bell"></i> 3. Semáforo: ¡Pedido Listo! (Voz)
-        </button>
-        <button onclick="staffCancelOrder()" class="py-2.5 px-3 rounded-xl bg-rose-600 text-white flex items-center justify-center gap-2">
-          <i class="fa-solid fa-ban"></i> 4. Semáforo: Pedido Cancelado (Voz)
-        </button>
-      </div>
-    </div>
+  <!-- =========================================================
+       7. CONTENEDOR FLOTANTE DE POP-UPS COMERCIALES Y MÉTRICAS
+       (Lo controla: popups_metricas.js)
+  ========================================================== -->
+  <div id="contenedor-popups"></div>
 
-    <!-- TELEMETRÍA Y MÉTRICAS DE POP-UPS COMERCIALES -->
-    <div class="glass rounded-2xl p-4 border border-slate-700">
-      <div class="flex justify-between items-center mb-3">
-        <div>
-          <h3 class="font-extrabold text-sm text-amber-400"><i class="fa-solid fa-chart-line mr-1"></i> Métricas de Pop-ups Comerciales</h3>
-          <p class="text-[11px] text-slate-400">Mide qué anuncios ven los clientes, cuáles aceptan y cuánto dinero extra generan.</p>
-        </div>
-        <button onclick="triggerUpsellCommercial()" class="px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold text-xs">
-          Probar Anuncio Comercial
-        </button>
-      </div>
-
-      <div class="grid grid-cols-4 gap-2 text-center text-xs mb-3">
-        <div class="bg-slate-900 p-2.5 rounded-xl">
-          <span class="text-slate-400 block text-[10px]">Vistos (Impresiones)</span>
-          <span id="metric-views" class="text-lg font-extrabold text-white">0</span>
-        </div>
-        <div class="bg-slate-900 p-2.5 rounded-xl">
-          <span class="text-slate-400 block text-[10px]">Aceptados (Compras)</span>
-          <span id="metric-conversions" class="text-lg font-extrabold text-emerald-400">0</span>
-        </div>
-        <div class="bg-slate-900 p-2.5 rounded-xl">
-          <span class="text-slate-400 block text-[10px]">Conversión %</span>
-          <span id="metric-rate" class="text-lg font-extrabold text-amber-400">0%</span>
-        </div>
-        <div class="bg-slate-900 p-2.5 rounded-xl">
-          <span class="text-slate-400 block text-[10px]">Venta Extra</span>
-          <span id="metric-revenue" class="text-lg font-extrabold text-emerald-300">$0</span>
-        </div>
-      </div>
-
-      <div id="metrics-log" class="bg-slate-950 rounded-xl p-3 text-[11px] font-mono text-slate-400 max-h-32 overflow-y-auto space-y-1">
-        <p>📊 Esperando eventos de pop-up comercial...</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ==========================================
-       POP-UP TIPO COMERCIAL (SUSTITUCIÓN CON SINERGIA / UPSELL)
-  =========================================== -->
-  <div id="modal-commercial" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="max-w-sm w-full rounded-3xl overflow-hidden shadow-2xl border-2 border-amber-400 pulse-border bg-slate-900">
-      <div class="commercial-gradient p-5 text-white relative">
-        <span id="commercial-badge" class="inline-block text-[10px] font-extrabold uppercase tracking-wider bg-black/30 px-2.5 py-1 rounded-full mb-2">
-          🔥 Recomendación en Sinergia
-        </span>
-        <h3 id="commercial-greeting" class="text-xl font-extrabold leading-tight">
-          ¡Señorita Sofía, este platillo sale enseguida!
-        </h3>
-        <p id="commercial-subtitle" class="text-xs text-amber-100 mt-1">
-          El producto Huevos al Gusto se agotó en este momento, pero te recomendamos esta especialidad recién hecha:
-        </p>
-      </div>
-
-      <div class="p-5">
-        <div class="bg-slate-800 rounded-2xl p-3.5 flex items-center justify-between mb-4 border border-slate-700">
-          <div>
-            <span class="text-xs text-amber-400 font-bold block">⭐ Especialidad Recomendada</span>
-            <h4 id="commercial-product-name" class="font-extrabold text-base text-white">Chilaquiles Especiales con Carne Asada</h4>
-            <p class="text-xs text-slate-400">Tiempo de preparación: ⏱️ 10 min</p>
-          </div>
-          <div class="text-right">
-            <span class="text-xs line-through text-slate-500 block">$95</span>
-            <span id="commercial-product-price" class="text-xl font-extrabold text-emerald-400">$85</span>
-          </div>
-        </div>
-
-        <div class="space-y-2">
-          <button onclick="acceptCommercialOffer()" class="w-full py-3.5 rounded-2xl commercial-gradient text-white font-extrabold text-sm shadow-lg">
-            ¡Sí, cambiar por esta recomendación!
-          </button>
-          <button onclick="rejectCommercialOffer()" class="w-full py-2.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white text-xs font-bold">
-            No gracias, elegiré otra opción del menú
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- =========================================================
+       NAVEGACIÓN BÁSICA DEL ESQUELETO
+  ========================================================== -->
   <script>
-    // =====================================================
-    // ESTADO GLOBAL DE LA APLICACIÓN (FASE 1)
-    // =====================================================
-    const state = {
-      user: {
-        name: "Sofía",
-        lastname: "Ramírez",
-        gender: "F", // F = Señorita, M = Joven / Caballero, N = Hola
-        phone: "7221234567",
-        email: "sofia@cliente.com",
-        points: 120,
-        activeAddress: "🏠 Casa: Av. de las Palmas 97",
-        addresses: [
-          { tag: "🏠 Casa", text: "Av. de las Palmas 97" },
-          { tag: "💼 Trabajo", text: "Oficina Centro #402" },
-          { tag: "❤️ Con mi novi@", text: "Privada San Jorge #14" }
-        ]
-      },
-      // Catálogo con Tiempos de Preparación y Sinergias
-      menu: [
-        { id: 1, name: "Huevos al Gusto con Arroz", category: "Desayuno Huevos", price: 75, prepMin: 10, synergyId: 2 },
-        { id: 2, name: "Chilaquiles con Carne Asada", category: "Desayuno Huevos", price: 85, prepMin: 10, synergyId: 1 },
-        { id: 3, name: "Hamburguesa Especial de la Casa", category: "Hamburguesas", price: 85, prepMin: 10, synergyId: 4 },
-        { id: 4, name: "Carne Asada a la Tampiqueña", category: "Especialidades", price: 95, prepMin: 12, synergyId: 5 },
-        { id: 5, name: "Chuleta Empanizada + Agua del Día", category: "Especialidades", price: 85, prepMin: 10, synergyId: 4 },
-        { id: 6, name: "Agua Fresca de Sabor (1 Litro)", category: "Bebidas", price: 35, prepMin: 2, synergyId: 3 }
-      ],
-      selectedCategory: "Todo",
-      cart: [],
-      discount: 0,
-      discountCode: "",
-      // Estado de Mesas (Máximo 5 Digitales activas + Físicas)
-      queue: {
-        digitalActive: 3, // de 5 máximo
-        digitalOverflow: 0,
-        physicalActive: 1,
-        extraKitchenMinutes: 0,
-        ratio: "1:1"
-      },
-      // Métricas de Pop-ups Comerciales
-      metrics: {
-        views: 0,
-        conversions: 0,
-        revenue: 0
-      },
-      currentCommercialOffer: { name: "Chilaquiles con Carne Asada", price: 85, prepMin: 10 }
-    };
-
-    // =====================================================
-    // UTILIDAD DE VOZ PARA EL COMENSAL (WEB SPEECH API)
-    // =====================================================
-    function speakAlert(text) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'es-MX';
-      utterance.rate = 1.02;
-      window.speechSynthesis.speak(utterance);
-    }
-
-    function getCourtesyTitle() {
-      if (state.user.gender === 'F') return `Señorita ${state.user.name}`;
-      if (state.user.gender === 'M') return `Joven ${state.user.name}`;
-      return state.user.name;
-    }
-
-    // =====================================================
-    // PANTALLAS DE BIENVENIDA Y REGISTRO VALIDADO A 10 DÍGITOS
-    // =====================================================
-    function showAuthScreen(type) {
-      document.getElementById('screen-welcome').classList.add('hidden');
-      document.getElementById('screen-register').classList.toggle('hidden', type !== 'register');
-      document.getElementById('screen-login').classList.toggle('hidden', type !== 'login');
-    }
-
-    function backToWelcome() {
-      document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-login').classList.add('hidden');
-      document.getElementById('screen-welcome').classList.remove('hidden');
-    }
-
-    function validatePhoneInput(input) {
-      input.value = input.value.replace(/\D/g, '').slice(0, 10);
-      const len = input.value.length;
-      const counter = document.getElementById('phone-counter');
-      const btn = document.getElementById('btn-submit-register');
-      const errorMsg = document.getElementById('phone-error');
-
-      counter.textContent = `${len} / 10 dígitos`;
-      if (len === 10) {
-        counter.className = "text-xs font-extrabold text-emerald-400";
-        errorMsg.textContent = "✅ Número de 10 dígitos validado correctamente.";
-        errorMsg.className = "text-[11px] text-emerald-400 mt-1";
-        btn.disabled = false;
-        btn.className = "w-full py-3.5 rounded-2xl commercial-gradient text-white font-extrabold text-sm shadow-lg cursor-pointer transition";
-        btn.textContent = "Crear mi cuenta y entrar al Menú";
-      } else {
-        counter.className = "text-xs font-bold text-red-400";
-        errorMsg.textContent = `Faltan ${10 - len} dígitos para activar el registro.`;
-        errorMsg.className = "text-[11px] text-amber-400 mt-1";
-        btn.disabled = true;
-        btn.className = "w-full py-3.5 rounded-2xl bg-slate-700 text-slate-400 font-extrabold text-sm cursor-not-allowed transition";
-        btn.textContent = "Completa los 10 dígitos del teléfono";
-      }
-    }
-
-    function selectAddressTag(tag) {
-      document.getElementById('reg-addr-tag').value = tag;
-      document.querySelectorAll('.addr-tag-btn').forEach(btn => {
-        const active = btn.textContent.trim() === tag;
-        btn.className = active
-          ? "addr-tag-btn py-2 px-2 rounded-xl border border-amber-500 bg-amber-500/20 text-xs font-bold"
-          : "addr-tag-btn py-2 px-2 rounded-xl border border-slate-700 bg-slate-900 text-xs font-bold";
+    function cambiarModuloPrincipal(idVista) {
+      document.querySelectorAll('.modulo-pantalla').forEach(sec => {
+        sec.classList.toggle('hidden', sec.id !== idVista);
       });
     }
 
-    function handleRegister(e) {
-      e.preventDefault();
-      const genderRadio = document.querySelector('input[name="reg-gender"]:checked');
-      const tag = document.getElementById('reg-addr-tag').value;
-      const addrText = document.getElementById('reg-address').value;
-
-      state.user.name = document.getElementById('reg-name').value.trim();
-      state.user.lastname = document.getElementById('reg-lastname').value.trim();
-      state.user.gender = genderRadio ? genderRadio.value : 'F';
-      state.user.phone = document.getElementById('reg-phone').value;
-      state.user.email = document.getElementById('reg-email').value.trim();
-      state.user.activeAddress = `${tag}: ${addrText}`;
-      state.user.addresses.unshift({ tag, text: addrText });
-
-      enterMainApp();
-    }
-
-    function handleQuickLogin(e) {
-      e.preventDefault();
-      const phone = document.getElementById('login-phone').value;
-      if (phone.length === 10) state.user.phone = phone;
-      enterMainApp();
-    }
-
-    function enterMainApp() {
-      document.getElementById('screen-welcome').classList.add('hidden');
-      document.getElementById('screen-register').classList.add('hidden');
-      document.getElementById('screen-login').classList.add('hidden');
-      document.getElementById('screen-app').classList.remove('hidden');
-
-      updateUserProfileUI();
-      renderMenu();
-      updateQueueCalculation();
-      speakAlert(`Bienvenida al menú digital, ${getCourtesyTitle()}.`);
-    }
-
-    // =====================================================
-    // NAVEGACIÓN DE LAS 3 ZONAS Y PERFIL
-    // =====================================================
-    function switchClientTab(tab) {
-      ['tienda', 'perfil', 'descuentos'].forEach(t => {
-        document.getElementById(`zone-${t}`).classList.toggle('hidden', t !== tab);
-        const btn = document.getElementById(`tab-btn-${t}`);
-        btn.className = (t === tab)
-          ? "py-2.5 rounded-xl font-extrabold text-xs bg-amber-500 text-slate-950 transition"
-          : "py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:text-white transition";
+    function cambiarZonaCliente(idZona) {
+      document.querySelectorAll('.subzona-cliente').forEach(z => {
+        z.classList.toggle('hidden', z.id !== idZona);
       });
-    }
-
-    function updateUserProfileUI() {
-      const title = getCourtesyTitle();
-      document.getElementById('header-greeting').textContent = `Hola, ${title}`;
-      document.getElementById('header-location').innerHTML = `<i class="fa-solid fa-location-dot text-emerald-400"></i> ${state.user.activeAddress}`;
-      document.getElementById('header-points').textContent = state.user.points;
-      document.getElementById('profile-points').textContent = state.user.points;
-      document.getElementById('profile-fullname').textContent = `${state.user.name} ${state.user.lastname}`;
-      document.getElementById('profile-contact').textContent = `📱 ${state.user.phone} · ${state.user.email}`;
-      document.getElementById('profile-courtesy').textContent = `Trato activo: ${title}`;
-
-      const list = document.getElementById('saved-addresses-list');
-      list.innerHTML = state.user.addresses.map((a, idx) => `
-        <div onclick="setActiveAddress(${idx})" class="p-2.5 rounded-xl bg-slate-900 border ${state.user.activeAddress.includes(a.text) ? 'border-emerald-500' : 'border-slate-800'} flex justify-between items-center cursor-pointer">
-          <span><strong>${a.tag}:</strong> ${a.text}</span>
-          <span class="text-[10px] text-emerald-400 font-bold">${state.user.activeAddress.includes(a.text) ? 'Activa' : 'Elegir'}</span>
-        </div>
-      `).join('');
-    }
-
-    function setActiveAddress(idx) {
-      const chosen = state.user.addresses[idx];
-      state.user.activeAddress = `${chosen.tag}: ${chosen.text}`;
-      updateUserProfileUI();
-    }
-
-    function addNewAddress() {
-      const tag = document.getElementById('new-addr-tag').value.trim() || "📍 Otra";
-      const text = document.getElementById('new-addr-text').value.trim();
-      if (!text) return;
-      state.user.addresses.push({ tag, text });
-      state.user.activeAddress = `${tag}: ${text}`;
-      document.getElementById('new-addr-tag').value = "";
-      document.getElementById('new-addr-text').value = "";
-      updateUserProfileUI();
-    }
-
-    function changeProfilePhoto(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('header-avatar').src = e.target.result;
-        document.getElementById('profile-avatar').src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function redeemProfileCode() {
-      const code = document.getElementById('profile-code-input').value.trim().toUpperCase();
-      if (!code) return;
-      state.user.points += 50;
-      document.getElementById('profile-code-input').value = "";
-      updateUserProfileUI();
-      speakAlert(`${getCourtesyTitle()}, sumamos 50 puntos a tu perfil.`);
-    }
-
-    // =====================================================
-    // TIENDA, CARRITO Y CÁLCULO DE FILA (MÁXIMO 5 LUGARES)
-    // =====================================================
-    function setCategory(cat) {
-      state.selectedCategory = cat;
-      document.querySelectorAll('.cat-pill').forEach(btn => {
-        const match = btn.textContent.includes(cat) || (cat === 'Todo' && btn.textContent === 'Todo');
-        btn.className = match
-          ? "cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-500 text-slate-950"
-          : "cat-pill shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300";
+      ['zona-perfil', 'zona-tienda', 'zona-descuentos'].forEach(id => {
+        const btn = document.getElementById('btn-' + id);
+        if (btn) {
+          btn.className = (id === idZona)
+            ? 'py-2.5 rounded-xl bg-amber-500 text-slate-950 font-extrabold'
+            : 'py-2.5 rounded-xl text-slate-400 font-bold';
+        }
       });
-      renderMenu();
-    }
-
-    function renderMenu() {
-      const query = (document.getElementById('menu-search').value || "").toLowerCase();
-      const grid = document.getElementById('menu-grid');
-
-      const filtered = state.menu.filter(item => {
-        const matchesCat = state.selectedCategory === 'Todo' || item.category === state.selectedCategory;
-        const matchesText = item.name.toLowerCase().includes(query) || item.category.toLowerCase().includes(query);
-        return matchesCat && matchesText;
-      });
-
-      grid.innerHTML = filtered.map(item => `
-        <div class="glass rounded-2xl p-3.5 flex items-center justify-between border border-slate-800">
-          <div>
-            <span class="text-[10px] font-bold text-amber-400 uppercase">${item.category} · ⏱️ ${item.prepMin} min</span>
-            <h4 class="font-extrabold text-sm text-white">${item.name}</h4>
-            <p class="text-sm font-extrabold text-emerald-400 mt-0.5">$${item.price} MXN</p>
-          </div>
-          <button onclick="addToCart(${item.id})" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs shadow">
-            + Agregar
-          </button>
-        </div>
-      `).join('');
-    }
-
-    function addToCart(id) {
-      const prod = state.menu.find(p => p.id === id);
-      if (!prod) return;
-      state.cart.push(prod);
-      renderCart();
-      updateQueueCalculation();
-    }
-
-    function QuickReorder(name, price, prepMin) {
-      state.cart.push({ id: 99, name, price, prepMin });
-      switchClientTab('tienda');
-      renderCart();
-      updateQueueCalculation();
-    }
-
-    function applyPromoCode(code, amount) {
-      state.discountCode = code;
-      state.discount = amount;
-      switchClientTab('tienda');
-      renderCart();
-      speakAlert(`Código ${code} activado en tu bandeja.`);
-    }
-
-    function renderCart() {
-      const box = document.getElementById('cart-box');
-      if (state.cart.length === 0) {
-        box.classList.add('hidden');
-        return;
-      }
-      box.classList.remove('hidden');
-
-      const itemsDiv = document.getElementById('cart-items');
-      itemsDiv.innerHTML = state.cart.map((item, idx) => `
-        <div class="flex justify-between items-center bg-slate-900/90 px-3 py-1.5 rounded-lg">
-          <span>1x ${item.name} <em class="text-slate-400">(${item.prepMin}m)</em></span>
-          <div class="flex items-center gap-2">
-            <span class="font-bold">$${item.price}</span>
-            <button onclick="removeFromCart(${idx})" class="text-rose-400"><i class="fa-solid fa-xmark"></i></button>
-          </div>
-        </div>
-      `).join('');
-
-      const subtotal = state.cart.reduce((sum, i) => sum + i.price, 0);
-      const totalPrep = state.cart.reduce((sum, i) => sum + i.prepMin, 0);
-      const finalTotal = Math.max(0, subtotal - state.discount);
-
-      document.getElementById('cart-prep-time').textContent = `⏱️ +${totalPrep} min de tu orden`;
-      document.getElementById('cart-discount-label').textContent = state.discountCode ? `-$${state.discount} (${state.discountCode})` : '$0';
-      document.getElementById('cart-total').textContent = finalTotal;
-    }
-
-    function removeFromCart(idx) {
-      state.cart.splice(idx, 1);
-      renderCart();
-      updateQueueCalculation();
-    }
-
-    // =====================================================
-    // ALGORITMO DE FILA: 5 LUGARES DIGITALES + MESA FÍSICA (1x1 FLEXIBLE)
-    // =====================================================
-    function updateQueueCalculation() {
-      const ratio = document.getElementById('ratio-selector') ? document.getElementById('ratio-selector').value : "1:1";
-      state.queue.ratio = ratio;
-
-      // Cada pedido activo equivale en promedio a 10 minutos + tiempo extra de cocina + carrito actual
-      const cartMinutes = state.cart.reduce((sum, i) => sum + i.prepMin, 0);
-      let ratioMultiplier = 1;
-      if (ratio === "1:2") ratioMultiplier = 1.25; // Prioridad comedor físico aumenta espera digital
-      if (ratio === "2:1") ratioMultiplier = 0.85; // Prioridad digital agiliza fila online
-
-      const baseOrdersAhead = state.queue.digitalActive + state.queue.digitalOverflow + state.queue.physicalActive;
-      const estimatedWait = Math.round((baseOrdersAhead * 10 * ratioMultiplier) + state.queue.extraKitchenMinutes + cartMinutes);
-
-      // Actualizar vista del cliente
-      const slotsText = document.getElementById('queue-slots-text');
-      const detailText = document.getElementById('queue-detail-text');
-      const dot = document.getElementById('queue-dot');
-      document.getElementById('queue-wait-minutes').textContent = `${estimatedWait} min`;
-
-      if (state.queue.digitalActive >= 5) {
-        dot.className = "w-2.5 h-2.5 rounded-full bg-amber-400 inline-block animate-ping";
-        slotsText.textContent = `5 / 5 llenos (${state.queue.digitalOverflow + 1} en fila antes que tú)`;
-        slotsText.className = "text-amber-300 font-extrabold";
-        detailText.textContent = `Puedes pedir ahora: te avisaremos tu turno (${state.queue.physicalActive} mesas físicas activas).`;
-      } else {
-        dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block";
-        slotsText.textContent = `${state.queue.digitalActive} / 5 lugares ocupados`;
-        slotsText.className = "text-emerald-400 font-extrabold";
-        detailText.textContent = `Intercalado ${ratio} activo (${state.queue.physicalActive} mesa física en preparación).`;
-      }
-
-      // Actualizar vista del personal
-      document.getElementById('staff-digital-count').textContent = `${state.queue.digitalActive} / 5`;
-      document.getElementById('staff-physical-count').textContent = state.queue.physicalActive;
-      document.getElementById('staff-overflow-count').textContent = state.queue.digitalOverflow;
-      document.getElementById('staff-total-wait').textContent = `${estimatedWait} min`;
-    }
-
-    // =====================================================
-    // FLUJO: CLIENTE PIDE -> MESAS VALIDA -> POP-UP O PAGO
-    // =====================================================
-    function sendOrderToMesas() {
-      if (state.cart.length === 0) return;
-
-      // Si ya hay 5 lugares ocupados, suma a la fila de espera pero permite pedir
-      if (state.queue.digitalActive < 5) {
-        state.queue.digitalActive++;
-      } else {
-        state.queue.digitalOverflow++;
-      }
-      updateQueueCalculation();
-
-      const semaforo = document.getElementById('order-semaforo');
-      semaforo.className = "mt-3 rounded-xl p-3 border border-amber-400 bg-amber-500/15 text-xs";
-      document.getElementById('semaforo-title').textContent = "🟡 EN VALIDACIÓN POR EL ÁREA DE MESAS";
-      document.getElementById('semaforo-desc').textContent = `${getCourtesyTitle()}, estamos verificando disponibilidad en cocina. En segundos se activará tu pago.`;
-      document.getElementById('payment-unlock-box').classList.add('hidden');
-      semaforo.classList.remove('hidden');
-
-      // Notificar al panel de Mesas
-      document.getElementById('staff-badge').classList.remove('hidden');
-      const itemsNames = state.cart.map(i => i.name).join(', ');
-      document.getElementById('staff-order-card').innerHTML = `
-        <div class="text-white font-bold mb-1">🔔 Cliente: ${getCourtesyTitle()} (${state.user.phone})</div>
-        <div class="text-amber-300 mb-1">Productos solicitados: ${itemsNames}</div>
-        <div class="text-slate-400">Ubicación: ${state.user.activeAddress}</div>
-      `;
-
-      const waitMin = document.getElementById('queue-wait-minutes').textContent;
-      speakAlert(`${getCourtesyTitle()}, recibimos tu solicitud. Tiempo estimado actual: ${waitMin}. Validando disponibilidad en Mesas.`);
-    }
-
-    // Acciones del Panel de Mesas / Cocina
-    function staffConfirmOrder() {
-      switchRoleView('client');
-      const semaforo = document.getElementById('order-semaforo');
-      semaforo.className = "mt-3 rounded-xl p-3 border border-emerald-400 bg-emerald-500/15 text-xs";
-      document.getElementById('semaforo-title').textContent = "🔵 CONFIRMADO POR MESAS — LISTO PARA PAGO";
-      document.getElementById('semaforo-desc').textContent = `Todo disponible, ${getCourtesyTitle()}. Elige cómo deseas pagar:`;
-      document.getElementById('payment-unlock-box').classList.remove('hidden');
-      speakAlert(`${getCourtesyTitle()}, el área de Mesas confirmó tu pedido. Ya puedes proceder al pago.`);
-    }
-
-    function staffTriggerOutOfStockCommercial() {
-      switchRoleView('client');
-      const title = getCourtesyTitle();
-      const firstItem = state.cart[0] ? state.cart[0].name : "Huevos al Gusto";
-
-      document.getElementById('commercial-badge').textContent = "⚡ AVISO DE MESAS + RECOMENDACIÓN SINERGIA";
-      document.getElementById('commercial-greeting').textContent = `${title}, el producto "${firstItem}" se terminó`;
-      document.getElementById('commercial-subtitle').textContent = "Pero para que no esperes de más, nuestro sistema seleccionó este platillo recién hecho que hace sinergia con tu orden:";
-      document.getElementById('commercial-product-name').textContent = "Chilaquiles con Carne Asada Recién Hechos";
-      document.getElementById('commercial-product-price').textContent = "$85";
-
-      state.currentCommercialOffer = { name: "Chilaquiles con Carne Asada", price: 85, prepMin: 10 };
-      openCommercialModal();
-      speakAlert(`${title}, el producto seleccionado no está disponible por el momento, pero te recomendamos nuestros Chilaquiles con Carne Asada recién hechos.`);
-    }
-
-    function triggerUpsellCommercial() {
-      switchRoleView('client');
-      const title = getCourtesyTitle();
-      document.getElementById('commercial-badge').textContent = "🔥 COMERCIAL EXCLUSIVO PARA TU ORDEN";
-      document.getElementById('commercial-greeting').textContent = `¡${title}, complementa tu comida hoy!`;
-      document.getElementById('commercial-subtitle').textContent = "El 80% de nuestros comensales agregan nuestra Agua Fresca de 1 Litro a mitad de tiempo:";
-      document.getElementById('commercial-product-name').textContent = "Agua Fresca del Día (1 Litro)";
-      document.getElementById('commercial-product-price').textContent = "$35";
-
-      state.currentCommercialOffer = { name: "Agua Fresca del Día (1 Litro)", price: 35, prepMin: 2 };
-      openCommercialModal();
-      speakAlert(`${title}, tenemos una promoción especial para acompañar tu pedido.`);
-    }
-
-    function openCommercialModal() {
-      state.metrics.views++;
-      logMetric(`👁️ VISTO: Pop-up comercial mostrado a ${getCourtesyTitle()} (${state.currentCommercialOffer.name})`);
-      updateMetricsUI();
-      document.getElementById('modal-commercial').classList.remove('hidden');
-    }
-
-    function acceptCommercialOffer() {
-      document.getElementById('modal-commercial').classList.add('hidden');
-      if (state.cart.length > 0) state.cart.shift(); // Sustituye el agotado
-      state.cart.push({
-        id: Date.now(),
-        name: state.currentCommercialOffer.name,
-        price: state.currentCommercialOffer.price,
-        prepMin: state.currentCommercialOffer.prepMin
-      });
-      renderCart();
-
-      state.metrics.conversions++;
-      state.metrics.revenue += state.currentCommercialOffer.price;
-      logMetric(`✅ COMPRADO: ${getCourtesyTitle()} aceptó el comercial (+$${state.currentCommercialOffer.price} MXN)`);
-      updateMetricsUI();
-
-      // Desbloquea pago automáticamente tras aceptar el sustituto
-      staffConfirmOrder();
-    }
-
-    function rejectCommercialOffer() {
-      document.getElementById('modal-commercial').classList.add('hidden');
-      logMetric(`❌ IGNORADO: ${getCourtesyTitle()} cerró el pop-up comercial.`);
-      updateMetricsUI();
-    }
-
-    function updateMetricsUI() {
-      document.getElementById('metric-views').textContent = state.metrics.views;
-      document.getElementById('metric-conversions').textContent = state.metrics.conversions;
-      const rate = state.metrics.views > 0 ? Math.round((state.metrics.conversions / state.metrics.views) * 100) : 0;
-      document.getElementById('metric-rate').textContent = `${rate}%`;
-      document.getElementById('metric-revenue').textContent = `$${state.metrics.revenue}`;
-    }
-
-    function logMetric(text) {
-      const box = document.getElementById('metrics-log');
-      const time = new Date().toLocaleTimeString();
-      box.innerHTML = `<p>[${time}] ${text}</p>` + box.innerHTML;
-    }
-
-    function completePayment(method) {
-      const semaforo = document.getElementById('order-semaforo');
-      semaforo.className = "mt-3 rounded-xl p-3 border border-purple-400 bg-purple-500/15 text-xs";
-      document.getElementById('semaforo-title').textContent = `🟣 PAGADO CON ${method.toUpperCase()} — EN COCINA`;
-      document.getElementById('semaforo-desc').textContent = "Tu orden ya se está preparando. Te avisaremos por voz cuando esté lista.";
-      document.getElementById('payment-unlock-box').classList.add('hidden');
-      state.user.points += 15;
-      state.cart = [];
-      renderCart();
-      updateUserProfileUI();
-      speakAlert(`Pago confirmado con ${method}. Tu pedido ya está en cocina y sumaste 15 puntos.`);
-    }
-
-    function staffSetOrderReady() {
-      switchRoleView('client');
-      const semaforo = document.getElementById('order-semaforo');
-      semaforo.classList.remove('hidden');
-      semaforo.className = "mt-3 rounded-xl p-3 border border-emerald-400 bg-emerald-500/25 text-xs";
-      document.getElementById('semaforo-title').textContent = "🟢 ¡PEDIDO LISTO PARA ENTREGA!";
-      document.getElementById('semaforo-desc').textContent = `${getCourtesyTitle()}, tu comida está recién salida de cocina.`;
-      speakAlert(`Atención ${getCourtesyTitle()}, tu pedido está listo para entrega.`);
-    }
-
-    function staffCancelOrder() {
-      switchRoleView('client');
-      const semaforo = document.getElementById('order-semaforo');
-      semaforo.classList.remove('hidden');
-      semaforo.className = "mt-3 rounded-xl p-3 border border-rose-500 bg-rose-500/20 text-xs";
-      document.getElementById('semaforo-title').textContent = "🔴 PEDIDO CANCELADO";
-      document.getElementById('semaforo-desc').textContent = "El pedido fue cancelado y tu lugar en la fila fue liberado.";
-      speakAlert(`${getCourtesyTitle()}, te informamos que el pedido ha sido cancelado.`);
-    }
-
-    // Botones de control de fila en cocina
-    function addPhysicalTable() {
-      state.queue.physicalActive++;
-      updateQueueCalculation();
-      speakAlert("Se agregó una mesa física. El tiempo estimado se actualizó para los clientes digitales.");
-    }
-
-    function addExtraKitchenTime(mins) {
-      state.queue.extraKitchenMinutes += mins;
-      updateQueueCalculation();
-      speakAlert(`Atención comensales: cocina agregó ${mins} minutos al tiempo estimado por alta demanda.`);
-    }
-
-    function injectDigitalOrder() {
-      if (state.queue.digitalActive < 5) state.queue.digitalActive++;
-      else state.queue.digitalOverflow++;
-      updateQueueCalculation();
-    }
-
-    function releaseOneSlot() {
-      if (state.queue.digitalOverflow > 0) state.queue.digitalOverflow--;
-      else if (state.queue.digitalActive > 0) state.queue.digitalActive--;
-      else if (state.queue.physicalActive > 0) state.queue.physicalActive--;
-      state.queue.extraKitchenMinutes = Math.max(0, state.queue.extraKitchenMinutes - 5);
-      updateQueueCalculation();
-    }
-
-    function switchRoleView(role) {
-      const isStaff = role === 'staff';
-      document.getElementById('screen-staff').classList.toggle('hidden', !isStaff);
-      if (isStaff) {
-        document.getElementById('screen-welcome').classList.add('hidden');
-        document.getElementById('screen-register').classList.add('hidden');
-        document.getElementById('screen-login').classList.add('hidden');
-        document.getElementById('screen-app').classList.add('hidden');
-        document.getElementById('staff-badge').classList.add('hidden');
-      } else {
-        document.getElementById('screen-app').classList.remove('hidden');
-        updateUserProfileUI();
-        renderMenu();
-        updateQueueCalculation();
-      }
-
-      document.getElementById('btn-role-client').className = !isStaff
-        ? "px-3 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition"
-        : "px-3 py-1 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-      document.getElementById('btn-role-staff').className = isStaff
-        ? "px-3 py-1 rounded-lg font-bold bg-amber-500 text-slate-950 transition"
-        : "px-3 py-1 rounded-lg font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
     }
   </script>
+
+  <!-- =========================================================
+       LLAMADO A CADA UNO DE LOS ARCHIVOS POR SEPARADO
+  ========================================================== -->
+  <script src="conexion.js"></script>
+  <script src="semaforo_voz.js"></script>
+  <script src="acceso_registro.js"></script>
+  <script src="perfil_cliente.js"></script>
+  <script src="tienda_menu.js"></script>
+  <script src="zona_descuentos.js"></script>
+  <script src="carrito_pagos.js"></script>
+  <script src="mesas_tiempos.js"></script>
+  <script src="popups_metricas.js"></script>
+  <script src="modos_inteligencia.js"></script>
+  <script src="plataformas_externas.js"></script>
+  <script src="arqueo_caja.js"></script>
 </body>
 </html>
