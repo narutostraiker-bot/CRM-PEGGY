@@ -1,5 +1,5 @@
 /* =========================================================
-   ARCHIVO 5: acceso_registro.js
+   ARCHIVO 5: acceso_registro.js (ACTUALIZADO - UBICACIÓN DESGLOSADA + GPS + FIX)
    Controla el Acceso, Registro con 10 dígitos, Trato y Temas
 ========================================================== */
 
@@ -66,22 +66,22 @@ function cambiarTemaVisual(tema) {
 function mostrarFormularioRegistro() {
   const contenedorAcceso = document.getElementById('vista-acceso');
   contenedorAcceso.innerHTML = `
-    <div class="tarjeta-cristal rounded-3xl p-6 shadow-2xl text-xs">
+    <div class="tarjeta-cristal rounded-3xl p-6 shadow-2xl text-xs text-left">
       <button onclick="iniciarModuloAcceso()" class="opacity-70 hover:opacity-100 mb-4 flex items-center gap-2 font-bold">
         <i class="fa-solid fa-arrow-left"></i> Volver
       </button>
       <h2 class="text-lg font-extrabold mb-1">Registro de Comensal</h2>
-      <p class="opacity-70 mb-4">Indícanos tus datos para coordinar entregas y avisarte por voz.</p>
+      <p class="opacity-70 mb-4">Indícanos tus datos para coordinar entregas exactas.</p>
 
       <form onsubmit="procesarRegistroCliente(event)" class="space-y-3">
         <div class="grid grid-cols-2 gap-2">
           <div>
             <label class="font-bold block mb-1">Nombre *</label>
-            <input type="text" id="reg-nombre" required placeholder="Ej. Sofía" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5" />
+            <input type="text" id="reg-nombre" required placeholder="Ej. Sofía" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
           </div>
           <div>
             <label class="font-bold block mb-1">Apellido *</label>
-            <input type="text" id="reg-apellido" required placeholder="Ej. Ramírez" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5" />
+            <input type="text" id="reg-apellido" required placeholder="Ej. Ramírez" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white" />
           </div>
         </div>
 
@@ -110,18 +110,45 @@ function mostrarFormularioRegistro() {
           </div>
           <input type="tel" id="reg-telefono" maxlength="10" inputmode="numeric" required placeholder="7221234567"
             oninput="validarTelefonoDiezDigitos(this)"
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-mono tracking-widest text-sm" />
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-mono tracking-widest text-sm text-white" />
           <p id="reg-tel-aviso" class="text-[10px] text-amber-400 mt-1">Debe ingresar exactamente 10 dígitos numéricos.</p>
         </div>
 
-        <div>
-          <label class="font-bold block mb-1">Ubicación de entrega *</label>
-          <select id="reg-etiqueta-dir" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 mb-1.5 font-bold">
-            <option value="🏠 Casa">🏠 Casa</option>
-            <option value="💼 Trabajo">💼 Trabajo</option>
-            <option value="❤️ Con mi novi@">❤️ Con mi novi@</option>
-          </select>
-          <input type="text" id="reg-calle-dir" required placeholder="Calle, número y referencias (ej. De las Palmas 97)..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5" />
+        <!-- APARTADOS DETALLADOS DE UBICACIÓN + BOTÓN GPS AUTOMÁTICO -->
+        <div class="bg-black/30 p-3 rounded-2xl border border-white/10 space-y-2.5">
+          <div class="flex justify-between items-center">
+            <span class="font-extrabold text-amber-400">📍 Dirección de Entrega Detallada</span>
+            <button type="button" onclick="obtenerUbicacionGPSAutomatica()" class="px-2.5 py-1 rounded-lg bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold text-[10px] hover:bg-sky-500/30 transition">
+              <i class="fa-solid fa-location-crosshairs mr-1"></i> Usar mi GPS
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <div class="col-span-2">
+              <label class="block text-[10px] opacity-80 mb-0.5">Calle *</label>
+              <input type="text" id="reg-dir-calle" required placeholder="Ej. De las Palmas" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white text-xs" />
+            </div>
+            <div>
+              <label class="block text-[10px] opacity-80 mb-0.5"># Casa *</label>
+              <input type="text" id="reg-dir-numero" required placeholder="Ej. #97" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white text-xs" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] opacity-80 mb-0.5">Fachada / Color *</label>
+              <input type="text" id="reg-dir-fachada" required placeholder="Ej. Portón negro, casa blanca" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white text-xs" />
+            </div>
+            <div>
+              <label class="block text-[10px] opacity-80 mb-0.5">Código Postal *</label>
+              <input type="text" id="reg-dir-cp" maxlength="5" inputmode="numeric" required placeholder="Ej. 52140" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white text-xs font-mono" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] opacity-80 mb-0.5">Referencias Extra *</label>
+            <input type="text" id="reg-dir-referencia" required placeholder="Ej. Entre av. principal y tiendita de la esquina" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2 text-white text-xs" />
+          </div>
         </div>
 
         <button type="submit" id="btn-enviar-reg" disabled class="w-full py-3.5 rounded-xl bg-slate-800 text-slate-500 font-extrabold cursor-not-allowed transition">
@@ -140,20 +167,44 @@ function validarTelefonoDiezDigitos(input) {
   const aviso = document.getElementById('reg-tel-aviso');
 
   if (len === 10) {
-    input.className = "w-full bg-slate-950 border border-emerald-500 rounded-xl p-2.5 font-mono tracking-widest text-sm input-valido";
+    input.className = "w-full bg-slate-950 border border-emerald-500 rounded-xl p-2.5 font-mono tracking-widest text-sm text-white input-valido";
     aviso.textContent = "✅ Teléfono de 10 dígitos validado correctamente.";
     aviso.className = "text-[10px] text-emerald-400 mt-1 font-bold";
     btn.disabled = false;
     btn.className = "w-full py-3.5 rounded-xl degradado-comercial text-white font-extrabold shadow-lg cursor-pointer transition";
-    btn.textContent = "¡Registrarme e Ingresar al Menú!";
+    btn.textContent = "¡Registrarse e Ingresar al Menú!";
   } else {
-    input.className = "w-full bg-slate-950 border border-red-500 rounded-xl p-2.5 font-mono tracking-widest text-sm input-invalido";
+    input.className = "w-full bg-slate-950 border border-red-500 rounded-xl p-2.5 font-mono tracking-widest text-sm text-white input-invalido";
     aviso.textContent = `Faltan ${10 - len} dígitos para habilitar el botón.`;
     aviso.className = "text-[10px] text-amber-400 mt-1";
     btn.disabled = true;
     btn.className = "w-full py-3.5 rounded-xl bg-slate-800 text-slate-500 font-extrabold cursor-not-allowed transition";
     btn.textContent = "Completa los 10 dígitos del teléfono";
   }
+}
+
+// Botón para extraer ubicación automática por GPS
+function obtenerUbicacionGPSAutomatica() {
+  if (!navigator.geolocation) {
+    alert("Tu navegador no soporta geolocalización automática.");
+    return;
+  }
+  
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      document.getElementById('reg-dir-calle').value = `GPS Lat: ${lat.toFixed(4)}`;
+      document.getElementById('reg-dir-numero').value = `Lon: ${lon.toFixed(4)}`;
+      document.getElementById('reg-dir-fachada').value = "Ubicación compartida por GPS";
+      document.getElementById('reg-dir-referencia').value = "Coordenadas exactas obtenidas por dispositivo";
+      alert("¡Ubicación GPS obtenida con éxito!");
+    },
+    (error) => {
+      alert("No se pudo obtener la ubicación automática. Por favor llénala manualmente.");
+    },
+    { timeout: 10000 }
+  );
 }
 
 function procesarRegistroCliente(e) {
@@ -165,14 +216,18 @@ function procesarRegistroCliente(e) {
   c.trato = c.sexo === "F" ? "Señorita" : (c.sexo === "M" ? "Joven" : c.nombre);
   c.telefono = document.getElementById('reg-telefono').value;
   
-  const etiqueta = document.getElementById('reg-etiqueta-dir').value;
-  const calle = document.getElementById('reg-calle-dir').value.trim();
-  c.ubicacionActiva = `${etiqueta}: ${calle}`;
-  c.direcciones = [{ etiqueta, direccion: calle }];
+  const calle = document.getElementById('reg-dir-calle').value.trim();
+  const numero = document.getElementById('reg-dir-numero').value.trim();
+  const fachada = document.getElementById('reg-dir-fachada').value.trim();
+  const cp = document.getElementById('reg-dir-cp').value.trim();
+  const referencia = document.getElementById('reg-dir-referencia').value.trim();
+
+  c.ubicacionActiva = `Calle: ${calle} ${numero}, C.P. ${cp} (${fachada}) - Ref: ${referencia}`;
+  c.direcciones = [{ etiqueta: "🏠 Casa", direccion: c.ubicacionActiva }];
   c.autenticado = true;
 
-  guardarEnMemoriaLocal();
-  enviarDatosASheets("REGISTRAR_CLIENTE", c);
+  if (typeof guardarEnMemoriaLocal === 'function') guardarEnMemoriaLocal();
+  if (typeof enviarDatosASheets === 'function') enviarDatosASheets("REGISTRAR_CLIENTE", c);
 
   // Ocultar sección de acceso y abrir la Tienda
   document.getElementById('vista-acceso').classList.add('hidden');
@@ -182,25 +237,27 @@ function procesarRegistroCliente(e) {
     renderizarTiendaYCarrito();
   }
   
-  hablarNotificacionVoz(`Bienvenido a Peggy Burgers Silvia, ${obtenerSaludoCliente()}. Tu cuenta ha sido registrada.`);
+  if (typeof hablarNotificacionVoz === 'function') {
+    hablarNotificacionVoz(`Bienvenido a Peggy Burgers Silvia, ${obtenerSaludoCliente()}. Tu cuenta ha sido registrada.`);
+  }
 }
 
 function mostrarFormularioLogin() {
   const contenedorAcceso = document.getElementById('vista-acceso');
   contenedorAcceso.innerHTML = `
-    <div class="tarjeta-cristal rounded-3xl p-6 shadow-2xl text-xs">
+    <div class="tarjeta-cristal rounded-3xl p-6 shadow-2xl text-xs text-left">
       <button onclick="iniciarModuloAcceso()" class="opacity-70 hover:opacity-100 mb-4 flex items-center gap-2 font-bold">
         <i class="fa-solid fa-arrow-left"></i> Volver
       </button>
       <h2 class="text-lg font-extrabold mb-1">¡Qué gusto verte de nuevo!</h2>
-      <p class="opacity-70 mb-4">Ingresa tu número de teléfono registrado para acceder a tu historial y puntos.</p>
+      <p class="opacity-70 mb-4">Ingresa tu número de teléfono registrado para acceder.</p>
 
       <form onsubmit="procesarLoginCliente(event)" class="space-y-3">
         <div>
           <label class="font-bold block mb-1">Teléfono a 10 dígitos *</label>
           <input type="tel" id="login-telefono" maxlength="10" inputmode="numeric" required placeholder="7221234567"
             oninput="this.value=this.value.replace(/\\D/g,'').slice(0,10)"
-            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-mono tracking-widest text-sm" />
+            class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 font-mono tracking-widest text-sm text-white" />
         </div>
         <button type="submit" class="w-full py-3.5 rounded-xl degradado-comercial text-white font-extrabold shadow-lg">
           Iniciar Sesión
@@ -219,7 +276,7 @@ function procesarLoginCliente(e) {
     document.getElementById('vista-acceso').classList.add('hidden');
     document.getElementById('vista-cliente').classList.remove('hidden');
     if (typeof renderizarTiendaYCarrito === 'function') renderizarTiendaYCarrito();
-    hablarNotificacionVoz(`Sesión iniciada correctamente, ${obtenerSaludoCliente()}.`);
+    if (typeof hablarNotificacionVoz === 'function') hablarNotificacionVoz(`Sesión iniciada correctamente, ${obtenerSaludoCliente()}.`);
   } else {
     alert("Ingresa un número válido de 10 dígitos.");
   }
